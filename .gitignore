@@ -7,3 +7,4 @@ autogen
 TODO.md
 NOTES.md
 .DS_Store
+.env

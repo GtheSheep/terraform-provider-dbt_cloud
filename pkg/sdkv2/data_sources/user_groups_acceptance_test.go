@@ -2,7 +2,7 @@ package data_sources_test
 
 import (
 	"fmt"
-	"os"
+	"github.com/dbt-labs/terraform-provider-dbtcloud/pkg/framework/acctest_config"
 	"testing"
 
 	"github.com/dbt-labs/terraform-provider-dbtcloud/pkg/framework/acctest_helper"
@@ -11,15 +11,7 @@ import (
 
 func TestDbtCloudUserGroupsDataSource(t *testing.T) {
 
-	var userID int
-	if isDbtCloudPR() {
-		userID = 1
-	} else if os.Getenv("CI") != "" {
-		userID = 54461
-	} else {
-		userID = 32
-	}
-
+	userID := acctest_config.AcceptanceTestConfig.DbtCloudUserId
 	config := userGroups(userID)
 
 	check := resource.ComposeAggregateTestCheckFunc(

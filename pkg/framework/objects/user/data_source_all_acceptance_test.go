@@ -1,6 +1,7 @@
 package user_test
 
 import (
+	"github.com/dbt-labs/terraform-provider-dbtcloud/pkg/framework/acctest_config"
 	"testing"
 
 	"github.com/dbt-labs/terraform-provider-dbtcloud/pkg/framework/acctest_helper"
@@ -9,12 +10,7 @@ import (
 
 func TestAccDbtCloudUsersDataSource(t *testing.T) {
 
-	var userEmail string
-	if acctest_helper.IsDbtCloudPR() {
-		userEmail = "d" + "ev@" + "db" + "tla" + "bs.c" + "om"
-	} else {
-		userEmail = "beno" + "it" + ".per" + "igaud" + "@" + "fisht" + "ownanalytics" + "." + "com"
-	}
+	userEmail := acctest_config.AcceptanceTestConfig.DbtCloudUserEmail
 
 	_ = userEmail
 	config := users()

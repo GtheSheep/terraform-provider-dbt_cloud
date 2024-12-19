@@ -2,6 +2,7 @@ package environment_test
 
 import (
 	"fmt"
+	"github.com/dbt-labs/terraform-provider-dbtcloud/pkg/framework/acctest_config"
 	"testing"
 
 	"github.com/dbt-labs/terraform-provider-dbtcloud/pkg/framework/acctest_helper"
@@ -95,5 +96,12 @@ func environments(
         project_id = dbtcloud_project.test_project2.id
 		depends_on = [dbtcloud_environment.test_environment1, dbtcloud_environment.test_environment2]
     }
-    `, randomProjectName1, randomProjectName2, randomEnvironmentName1, acctest_helper.DBT_CLOUD_VERSION, randomEnvironmentName2, acctest_helper.DBT_CLOUD_VERSION)
+    `,
+		randomProjectName1,
+		randomProjectName2,
+		randomEnvironmentName1,
+		acctest_config.AcceptanceTestConfig.DbtCloudVersion,
+		randomEnvironmentName2,
+		acctest_config.AcceptanceTestConfig.DbtCloudVersion,
+	)
 }

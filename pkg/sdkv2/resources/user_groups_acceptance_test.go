@@ -2,7 +2,7 @@ package resources_test
 
 import (
 	"fmt"
-	"os"
+	"github.com/dbt-labs/terraform-provider-dbtcloud/pkg/framework/acctest_config"
 	"strconv"
 	"testing"
 
@@ -13,19 +13,8 @@ import (
 
 func TestAccDbtCloudUserGroupsResource(t *testing.T) {
 
-	var userID int
-	var groupIDs string
-	if isDbtCloudPR() {
-		userID = 1
-		groupIDs = "[1,2,3]"
-	} else if value := os.Getenv("CI"); value != "" {
-		userID = 54461
-		groupIDs = "[531585, 531584, 531583]"
-	} else {
-		userID = 4
-		groupIDs = "[104, 105, 106]"
-	}
-
+	userID := acctest_config.AcceptanceTestConfig.DbtCloudUserId
+	groupIDs := fmt.Sprintf("[%s]", acctest_config.AcceptanceTestConfig.DbtCloudGroupIds)
 	GroupName := acctest.RandStringFromCharSet(10, acctest.CharSetAlpha)
 
 	resource.Test(t, resource.TestCase{

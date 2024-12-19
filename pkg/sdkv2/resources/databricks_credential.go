@@ -410,7 +410,7 @@ func resourceDatabricksCredentialUpdateGlobConn(
 			d.Get("catalog").(string),
 		)
 
-		for key, _ := range patchCredentialsDetails.Fields {
+		for key := range patchCredentialsDetails.Fields {
 			if d.Get(key) == nil || !d.HasChange(key) {
 				delete(patchCredentialsDetails.Fields, key)
 			}

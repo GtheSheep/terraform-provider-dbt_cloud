@@ -2,6 +2,7 @@ package job_test
 
 import (
 	"fmt"
+	"github.com/dbt-labs/terraform-provider-dbtcloud/pkg/framework/acctest_config"
 	"testing"
 
 	"github.com/dbt-labs/terraform-provider-dbtcloud/pkg/framework/acctest_helper"
@@ -137,5 +138,5 @@ func jobs(jobName string, jobName2 string) string {
 			dbtcloud_job.test_job2,
 		]
     }
-    `, acctest_helper.DBT_CLOUD_VERSION, acctest_helper.DBT_CLOUD_VERSION, jobName, jobName2)
+    `, acctest_config.AcceptanceTestConfig.DbtCloudVersion, acctest_config.AcceptanceTestConfig.DbtCloudVersion, jobName, jobName2)
 }

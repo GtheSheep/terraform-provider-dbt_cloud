@@ -40,10 +40,6 @@ func SharedClient() (*dbt_cloud.Client, error) {
 	return &client, nil
 }
 
-const (
-	DBT_CLOUD_VERSION = "latest"
-)
-
 var TestAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){
 	"dbtcloud": func() (tfprotov6.ProviderServer, error) {
 		upgradedSdkProvider, err := tf5to6server.UpgradeServer(
@@ -71,10 +67,6 @@ func TestAccPreCheck(t *testing.T) {
 	if v := os.Getenv("DBT_CLOUD_TOKEN"); v == "" {
 		t.Fatal("DBT_CLOUD_TOKEN must be set for acceptance tests")
 	}
-}
-
-func IsDbtCloudPR() bool {
-	return os.Getenv("DBT_CLOUD_ACCOUNT_ID") == "1"
 }
 
 func HelperTestResourceSchema[R resource.Resource](t *testing.T, r R) {

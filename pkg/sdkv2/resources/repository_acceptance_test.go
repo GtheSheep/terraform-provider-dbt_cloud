@@ -2,6 +2,7 @@ package resources_test
 
 import (
 	"fmt"
+	"github.com/dbt-labs/terraform-provider-dbtcloud/pkg/framework/acctest_config"
 	"regexp"
 	"strings"
 	"testing"
@@ -56,7 +57,8 @@ func TestAccDbtCloudRepositoryResource(t *testing.T) {
 		},
 	})
 
-	repoUrlGithubApplication := "git://github.com/dbt-labs/jaffle_shop.git"
+	repoUrlGithubApplication := acctest_config.AcceptanceTestConfig.GitHubRepoUrl
+	githubAppInstallationId := acctest_config.AcceptanceTestConfig.GitHubAppInstallationId
 	projectNameGithubApplication := strings.ToUpper(
 		acctest.RandStringFromCharSet(10, acctest.CharSetAlpha),
 	)
@@ -71,6 +73,7 @@ func TestAccDbtCloudRepositoryResource(t *testing.T) {
 				Config: testAccDbtCloudRepositoryResourceGithubApplicationConfig(
 					repoUrlGithubApplication,
 					projectNameGithubApplication,
+					githubAppInstallationId,
 				),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckDbtCloudRepositoryExists(
@@ -115,7 +118,11 @@ resource "dbtcloud_repository" "test_repository_github" {
 `, projectName, repoUrl)
 }
 
-func testAccDbtCloudRepositoryResourceGithubApplicationConfig(repoUrl, projectName string) string {
+func testAccDbtCloudRepositoryResourceGithubApplicationConfig(
+	repoUrl string,
+	projectName string,
+	githubAppInstallationId int,
+) string {
 	return fmt.Sprintf(`
 resource "dbtcloud_project" "test_project" {
   name        = "%s"
@@ -124,11 +131,11 @@ resource "dbtcloud_project" "test_project" {
 resource "dbtcloud_repository" "test_repository_github_application" {
   remote_url = "%s"
   project_id = dbtcloud_project.test_project.id
-  github_installation_id = 28374841
+  github_installation_id = %d
   git_clone_strategy = "github_app"
   pull_request_url_template = "https://github.com/my-org/my-repo/compare/qa...{{source}}"
 }
-`, projectName, repoUrl)
+`, projectName, repoUrl, githubAppInstallationId)
 }
 
 //

@@ -59,8 +59,36 @@ The CLI [dbtcloud-terraforming](https://github.com/dbt-labs/dbtcloud-terraformin
 
 ## Running Acceptance Tests
 
-Currently, acceptance tests, run via `make test-acceptance` must be done on your
-own account
+Acceptance tests are executed by running the `make test-acceptance` command.
+
+For the acceptance tests to work locally, the following environment variables must be set to appropriate values
+for a dbt Cloud account the tests can interact with. All dbt Cloud resources referenced by the environment variables
+(e.g. user id, email address, and group ids) must exist in the dbt Cloud account.
+```
+DBT_CLOUD_ACCOUNT_ID=1234
+DBT_CLOUD_HOST_URL=https://<host>/api
+DBT_CLOUD_TOKEN=<api_token>
+DBT_CLOUD_PERSONAL_ACCESS_TOKEN=<api_token>
+ACC_TEST_DBT_CLOUD_USER_EMAIL=<email_address>
+ACC_TEST_DBT_CLOUD_USER_ID=4321
+ACC_TEST_DBT_CLOUD_GROUP_IDS=1,2,3
+ACC_TEST_AZURE_DEVOPS_PROJECT_NAME=test-project
+ACC_TEST_GITHUB_REPO_URL=git@github.com:<github-org>/<dbt-project>.git
+ACC_TEST_GITHUB_APP_INSTALLATION_ID=1234
+```
+
+To assist with setting the environment variables, the `.env.example` file can be copied to `.env` and the values updated.  
+The variables can then be loaded into the environment by running `source .env` on Mac or Linux.
+
+**A note on the Repository Acceptance Tests**  
+The Repository Acceptance Tests require a GitHub repository to be set up and the dbt Cloud GitHub App installed.
+
+`ACC_TEST_GITHUB_REPO_URL` must be set to the SSH URL of a repository
+
+`ACC_TEST_GITHUB_APP_INSTALLATION_ID` must be set to the installation ID of the GitHub App.  
+The installation ID can be found by navigating to `Settings` -> `Applications`, 
+and clicking `Configure` on the dbt Cloud GitHub App. The installation ID can be found in the url, for example,
+`https://github.com/settings/installations/<installation_id>`
 
 ## Acknowledgement
 
