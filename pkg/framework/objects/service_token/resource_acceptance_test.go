@@ -1,10 +1,12 @@
 package service_token_test
 
 import (
+	"bytes"
 	"fmt"
 	"regexp"
 	"strconv"
 	"testing"
+	"text/template"
 
 	"github.com/dbt-labs/terraform-provider-dbtcloud/pkg/framework/acctest_helper"
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
@@ -252,4 +254,37 @@ func testAccCheckDbtCloudServiceTokenDestroy(s *terraform.State) error {
 	}
 
 	return nil
+}
+
+func TestServiceTokenPagination_GH_280(t *testing.T) {
+
+	var projects []string
+
+	for i := 1; i <= 40; i++ {
+		projects = append(projects, fmt.Sprintf("gh_280_test_project%d", i))
+	}
+
+	data := struct {
+		Projects []string
+	}{
+		Projects: projects,
+	}
+
+	// Parse and execute the template
+	var output bytes.Buffer
+	err := template.Must(template.ParseFiles("gh_280_acc_test.tf.tmpl")).Execute(&output, data)
+	if err != nil {
+		panic(err)
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { acctest_helper.TestAccPreCheck(t) },
+		ProtoV6ProviderFactories: acctest_helper.TestAccProtoV6ProviderFactories,
+		CheckDestroy:             testAccCheckDbtCloudServiceTokenDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: output.String(),
+			},
+		},
+	})
 }

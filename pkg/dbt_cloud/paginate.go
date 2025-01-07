@@ -15,6 +15,11 @@ type Response struct {
 	Extra Extra `json:"extra"`
 }
 
+type RawResponse struct {
+	Data  []json.RawMessage `json:"data"`
+	Extra Extra             `json:"extra"`
+}
+
 type Extra struct {
 	Pagination Pagination `json:"pagination"`
 }
@@ -40,19 +45,19 @@ func (c *Client) GetEndpoint(url string) ([]byte, error) {
 	return resp, err
 }
 
-func (c *Client) GetData(url string) []any {
+func (c *Client) GetRawData(url string) ([]json.RawMessage, error) {
 
 	// get the first page
 	jsonPayload, err := c.GetEndpoint(url)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	var response Response
+	var response RawResponse
 
 	err = json.Unmarshal(jsonPayload, &response)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	allResponses := response.Data
@@ -71,13 +76,13 @@ func (c *Client) GetData(url string) []any {
 
 		jsonPayload, err := c.GetEndpoint(newURL)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
-		var response Response
+		var response RawResponse
 
 		err = json.Unmarshal(jsonPayload, &response)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		if response.Extra.Pagination.Count == 0 {
@@ -90,7 +95,23 @@ func (c *Client) GetData(url string) []any {
 		allResponses = append(allResponses, response.Data...)
 	}
 
-	return allResponses
+	return allResponses, nil
+}
+
+func (c *Client) GetData(url string) []any {
+	rawData, err := c.GetRawData(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	allData := make([]any, len(rawData))
+	for i, data := range rawData {
+		err := json.Unmarshal(data, &allData[i])
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	return allData
 }
 
 func (c *Client) GetAllGroupIDsByName(groupName string) []int {

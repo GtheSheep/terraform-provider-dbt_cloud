@@ -45,23 +45,22 @@ type ServiceTokenPermissionListResponse struct {
 }
 
 func (c *Client) GetServiceTokenPermissions(serviceTokenID int) (*[]ServiceTokenPermission, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v3/accounts/%s/service-tokens/%s/permissions/", c.HostURL, strconv.Itoa(c.AccountID), strconv.Itoa(serviceTokenID)), nil)
+
+	allServiceTokenPermissionsRaw, err := c.GetRawData(fmt.Sprintf("%s/v3/accounts/%s/service-tokens/%s/permissions/", c.HostURL, strconv.Itoa(c.AccountID), strconv.Itoa(serviceTokenID)))
 	if err != nil {
 		return nil, err
 	}
 
-	body, err := c.doRequest(req)
-	if err != nil {
-		return nil, err
+	allPermissions := make([]ServiceTokenPermission, len(allServiceTokenPermissionsRaw))
+
+	for i, permission := range allServiceTokenPermissionsRaw {
+		err := json.Unmarshal(permission, &allPermissions[i])
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	serviceTokenPermissionListResponse := ServiceTokenPermissionListResponse{}
-	err = json.Unmarshal(body, &serviceTokenPermissionListResponse)
-	if err != nil {
-		return nil, err
-	}
-
-	return &serviceTokenPermissionListResponse.Data, nil
+	return &allPermissions, nil
 }
 
 func (c *Client) GetServiceToken(serviceTokenID int) (*ServiceToken, error) {
@@ -165,18 +164,12 @@ func (c *Client) UpdateServiceTokenPermissions(serviceTokenID int, serviceTokenP
 		return nil, err
 	}
 
-	body, err := c.doRequest(req)
+	_, err = c.doRequest(req)
 	if err != nil {
 		return nil, err
 	}
 
-	serviceTokenPermissionResponse := ServiceTokenPermissionListResponse{}
-	err = json.Unmarshal(body, &serviceTokenPermissionResponse)
-	if err != nil {
-		return nil, err
-	}
-
-	return &serviceTokenPermissionResponse.Data, nil
+	return c.GetServiceTokenPermissions(serviceTokenID)
 }
 
 func (c *Client) DeleteServiceToken(serviceTokenID int) (string, error) {

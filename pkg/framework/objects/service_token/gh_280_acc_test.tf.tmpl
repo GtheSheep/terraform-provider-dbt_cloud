@@ -1,0 +1,29 @@
+{{ range .Projects }}
+resource "dbtcloud_project" "{{ . }}" {
+  name = "{{ . }}"
+}
+{{ end }}
+
+resource "dbtcloud_service_token" "token" {
+  name = "issue280"
+
+  {{ range .Projects}}
+  service_token_permissions {
+    permission_set = "developer"
+    all_projects   = false
+    project_id     = dbtcloud_project.{{ . }}.id
+  }
+
+  service_token_permissions {
+    permission_set = "git_admin"
+    all_projects   = false
+    project_id     = dbtcloud_project.{{ . }}.id
+  }
+
+  service_token_permissions {
+    permission_set = "job_admin"
+    all_projects   = false
+    project_id     = dbtcloud_project.{{ . }}.id
+  }
+  {{ end }}
+}
